@@ -459,7 +459,7 @@
           <li class="active" data-view="optimizer">Household optimizer</li>
           <li data-view="timeline">Claiming timeline</li>
           <li data-view="survivor">Survivor impact</li>
-          <li data-view="notes">Notes</li>
+
         </ul>
       </div>
 
@@ -644,42 +644,7 @@
         </section>
       </div>
 
-      <!-- ========== VIEW 4: NOTES ========== -->
-      <div id="view-notes" class="view">
-        <section class="hero">
-          <div>
-            <h2>Planning notes</h2>
-            <p class="muted">Keep track of your thoughts, questions for your advisor, and decisions about your claiming strategy. Notes are saved in your browser.</p>
-          </div>
-        </section>
 
-        <section class="grid">
-          <div class="col-8">
-            <div class="panel panel-pad" style="margin-bottom: var(--space-6);">
-              <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">Add a note</h3>
-              <div class="field">
-                <textarea id="noteInput" placeholder="e.g., Ask advisor about spousal benefit timing, or remind yourself why you chose age 67..."></textarea>
-              </div>
-              <div class="actions">
-                <button class="btn btn-primary btn-sm" id="addNoteBtn">Save note</button>
-              </div>
-            </div>
-
-            <div id="notesList" class="notes-list"></div>
-          </div>
-
-          <div class="col-4 panel panel-pad">
-            <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">Quick reference</h3>
-            <div class="callout-info small" style="margin-bottom: var(--space-4);">
-              <strong>Current inputs:</strong>
-              <div id="notesQuickRef" style="margin-top: var(--space-2);"></div>
-            </div>
-            <div class="callout small">
-              <strong>Tip:</strong> Use notes to record why you chose specific claiming ages, questions for your financial advisor, or action items. Notes are stored locally in your browser and persist between visits.
-            </div>
-          </div>
-        </section>
-      </div>
 
     </main>
   </div>
@@ -697,7 +662,7 @@
       // Re-render active view data
       if (viewId === 'timeline') renderTimeline();
       if (viewId === 'survivor') renderSurvivor();
-      if (viewId === 'notes') renderNotes();
+
     }
 
     navItems.forEach(li => {
@@ -1101,78 +1066,7 @@
       });
     }
 
-    /* ===================== VIEW 4: NOTES ===================== */
-    function getNotes() {
-      try { return JSON.parse(localStorage.getItem('claimwise-notes') || '[]'); }
-      catch { return []; }
-    }
-    function saveNotes(notes) {
-      localStorage.setItem('claimwise-notes', JSON.stringify(notes));
-    }
 
-    function renderNotes() {
-      const notes = getNotes();
-      const list = document.getElementById('notesList');
-
-      if (notes.length === 0) {
-        list.innerHTML = `
-          <div class="empty-state">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--color-text-faint);">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-            <p>No notes yet. Add your first planning note above.</p>
-          </div>
-        `;
-      } else {
-        list.innerHTML = notes.map((n, idx) => `
-          <div class="note-card">
-            <div class="note-date">${new Date(n.date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</div>
-            <div class="note-text">${escapeHtml(n.text)}</div>
-            <div class="note-actions">
-              <button class="btn btn-sm btn-danger" onclick="deleteNote(${idx})">Delete</button>
-            </div>
-          </div>
-        `).join('');
-      }
-
-      // Quick reference
-      const input = collectInput();
-      document.getElementById('notesQuickRef').innerHTML = `
-        <p>${input.person1.name}: PIA ${money(input.person1.pia)}, claim at ${input.person1.claim}, FRA ${input.person1.fra}</p>
-        <p>${input.person2.name}: PIA ${money(input.person2.pia)}, claim at ${input.person2.claim}, FRA ${input.person2.fra}</p>
-        <p>Life expectancies: ${input.person1.life} / ${input.person2.life}</p>
-      `;
-    }
-
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-
-    function addNote() {
-      const textarea = document.getElementById('noteInput');
-      const text = textarea.value.trim();
-      if (!text) return;
-      const notes = getNotes();
-      notes.unshift({ text, date: new Date().toISOString() });
-      saveNotes(notes);
-      textarea.value = '';
-      renderNotes();
-    }
-
-    function deleteNote(idx) {
-      const notes = getNotes();
-      notes.splice(idx, 1);
-      saveNotes(notes);
-      renderNotes();
-    }
-
-    document.getElementById('addNoteBtn').addEventListener('click', addNote);
 
     /* ===================== INIT ===================== */
     document.getElementById('runBtn').addEventListener('click', render);
