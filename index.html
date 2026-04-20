@@ -571,7 +571,7 @@
           <div class="col-12 panel panel-pad">
             <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-2);">Break-even chart</h3>
             <p class="footer-note" style="margin-bottom: var(--space-4);">This chart plots cumulative household benefits by age so you can see where waiting overtakes claiming early.</p>
-            <canvas id="breakevenChart" height="110" aria-label="Break-even chart" role="img"></canvas>
+            <div style="position:relative; width:100%; min-height:300px;"><canvas id="breakevenChart" aria-label="Break-even chart" role="img"></canvas></div>
             <p class="small muted" id="breakevenText" style="margin-top: var(--space-4);"></p>
           </div>
 
@@ -604,7 +604,7 @@
             </div>
             <div class="panel panel-pad">
               <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">Monthly income by phase</h3>
-              <canvas id="phaseChart" height="200" aria-label="Monthly income by phase" role="img"></canvas>
+              <div style="position:relative; width:100%; min-height:250px;"><canvas id="phaseChart" aria-label="Monthly income by phase" role="img"></canvas></div>
             </div>
           </div>
         </section>
@@ -633,7 +633,7 @@
           <div class="col-12 panel panel-pad">
             <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-2);">Survivor benefit comparison</h3>
             <p class="footer-note" style="margin-bottom: var(--space-4);">Monthly survivor income across strategies, for each scenario.</p>
-            <canvas id="survivorChart" height="100" aria-label="Survivor benefit comparison chart" role="img"></canvas>
+            <div style="position:relative; width:100%; min-height:300px;"><canvas id="survivorChart" aria-label="Survivor benefit comparison chart" role="img"></canvas></div>
           </div>
 
           <div class="col-12 panel panel-pad">
@@ -809,7 +809,7 @@
         data: { labels, datasets },
         options: {
           responsive: true,
-          maintainAspectRatio: true,
+          maintainAspectRatio: false,
           plugins: {
             legend: { position: 'bottom' },
             tooltip: { callbacks: { label: c => `${c.dataset.label}: ${money(c.parsed.y)}` } }
@@ -983,7 +983,7 @@
         },
         options: {
           responsive: true,
-          maintainAspectRatio: true,
+          maintainAspectRatio: false,
           plugins: {
             legend: { display: false },
             tooltip: { callbacks: { label: c => money(c.parsed.y) + '/mo' } }
@@ -1053,7 +1053,7 @@
         },
         options: {
           responsive: true,
-          maintainAspectRatio: true,
+          maintainAspectRatio: false,
           plugins: {
             legend: { position: 'bottom' },
             tooltip: { callbacks: { label: c => `${c.dataset.label}: ${money(c.parsed.y)}/mo` } }
