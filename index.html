@@ -32,6 +32,7 @@
       --color-primary-highlight: #d7e8e7;
       --color-success: #437a22;
       --color-warning: #964219;
+      --color-danger: #b5332e;
       --radius-sm: 0.375rem; --radius-md: 0.625rem; --radius-lg: 0.875rem; --radius-xl: 1rem; --radius-full: 9999px;
       --shadow-sm: 0 1px 2px rgba(32, 30, 26, 0.06);
       --shadow-md: 0 8px 24px rgba(32, 30, 26, 0.08);
@@ -56,6 +57,7 @@
       --color-primary-highlight: #243537;
       --color-success: #7db85a;
       --color-warning: #d18a61;
+      --color-danger: #d9645f;
       --shadow-sm: 0 1px 2px rgba(0,0,0,0.25);
       --shadow-md: 0 8px 24px rgba(0,0,0,0.28);
     }
@@ -69,16 +71,17 @@
       color: var(--color-text);
       background: var(--color-bg);
     }
-    button, input, select { font: inherit; color: inherit; }
+    button, input, select, textarea { font: inherit; color: inherit; }
     button { cursor: pointer; }
-    input, select {
+    input, select, textarea {
       width: 100%;
       border: 1px solid var(--color-border);
       background: var(--color-surface-2);
       border-radius: var(--radius-md);
       padding: 0.85rem 0.95rem;
     }
-    input:focus, select:focus, button:focus-visible {
+    textarea { resize: vertical; min-height: 120px; }
+    input:focus, select:focus, textarea:focus, button:focus-visible {
       outline: 2px solid var(--color-primary);
       outline-offset: 2px;
     }
@@ -100,6 +103,7 @@
       padding: var(--space-6);
       display: grid;
       gap: var(--space-6);
+      align-content: start;
     }
     .logo-row {
       display: flex;
@@ -149,11 +153,23 @@
       border-radius: var(--radius-md);
       background: transparent;
       color: var(--color-text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+      user-select: none;
+    }
+    .sidebar li:hover {
+      background: var(--color-surface-offset);
     }
     .sidebar li.active {
       background: var(--color-primary-highlight);
       color: var(--color-primary);
       font-weight: 700;
+    }
+    .sidebar .rules-list li {
+      cursor: default;
+    }
+    .sidebar .rules-list li:hover {
+      background: transparent;
     }
     .hero {
       display: flex;
@@ -179,9 +195,11 @@
       grid-template-columns: repeat(12, 1fr);
       gap: var(--space-6);
     }
-    .col-5 { grid-column: span 5; }
-    .col-7 { grid-column: span 7; }
+    .col-3 { grid-column: span 3; }
     .col-4 { grid-column: span 4; }
+    .col-5 { grid-column: span 5; }
+    .col-6 { grid-column: span 6; }
+    .col-7 { grid-column: span 7; }
     .col-8 { grid-column: span 8; }
     .col-12 { grid-column: span 12; }
     .form-grid {
@@ -207,12 +225,24 @@
       background: var(--color-surface-2);
       transition: var(--transition);
     }
+    .btn:hover { background: var(--color-surface-offset); }
     .btn-primary {
       background: var(--color-primary);
       color: var(--color-text-inverse);
       border-color: var(--color-primary);
     }
     .btn-primary:hover { background: var(--color-primary-hover); }
+    .btn-sm {
+      padding: 0.55rem 0.85rem;
+      font-size: var(--text-sm);
+    }
+    .btn-danger {
+      color: var(--color-danger);
+      border-color: color-mix(in srgb, var(--color-danger) 30%, transparent);
+    }
+    .btn-danger:hover {
+      background: color-mix(in srgb, var(--color-danger) 10%, var(--color-surface));
+    }
     .metrics {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -290,12 +320,128 @@
       padding: var(--space-4);
       color: var(--color-text);
     }
+    .callout-info {
+      background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
+      border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      color: var(--color-text);
+    }
     .small { font-size: var(--text-sm); }
     .footer-note { color: var(--color-text-muted); font-size: var(--text-sm); }
+
+    /* View visibility */
+    .view { display: none; }
+    .view.active { display: grid; gap: var(--space-6); align-content: start; }
+
+    /* Timeline-specific styles */
+    .timeline { display: grid; gap: 0; position: relative; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 18px;
+      top: 24px;
+      bottom: 24px;
+      width: 2px;
+      background: var(--color-divider);
+    }
+    .tl-item {
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: var(--space-4);
+      padding: var(--space-4) 0;
+      align-items: start;
+    }
+    .tl-dot {
+      width: 38px; height: 38px;
+      border-radius: var(--radius-full);
+      display: grid; place-items: center;
+      font-size: var(--text-xs);
+      font-weight: 700;
+      z-index: 1;
+      border: 2px solid var(--color-divider);
+      background: var(--color-surface);
+      color: var(--color-text-muted);
+    }
+    .tl-dot.active-dot {
+      border-color: var(--color-primary);
+      background: var(--color-primary-highlight);
+      color: var(--color-primary);
+    }
+    .tl-dot.past-dot {
+      border-color: var(--color-success);
+      background: color-mix(in srgb, var(--color-success) 12%, var(--color-surface));
+      color: var(--color-success);
+    }
+    .tl-content h4 { font-size: var(--text-base); margin-bottom: var(--space-1); }
+    .tl-content p { color: var(--color-text-muted); font-size: var(--text-sm); }
+    .tl-amount {
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--color-primary);
+      font-size: var(--text-sm);
+    }
+
+    /* Survivor cards */
+    .survivor-scenarios {
+      display: grid;
+      gap: var(--space-4);
+    }
+    .survivor-card {
+      padding: var(--space-5);
+      border-radius: var(--radius-lg);
+      background: var(--color-surface-2);
+      border: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+    }
+    .survivor-card h4 {
+      font-size: var(--text-base);
+      margin-bottom: var(--space-2);
+    }
+    .survivor-card .amount {
+      font-size: var(--text-lg);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--color-primary);
+    }
+    .survivor-card p {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      margin-top: var(--space-2);
+    }
+
+    /* Notes-specific */
+    .notes-list { display: grid; gap: var(--space-3); }
+    .note-card {
+      padding: var(--space-4);
+      border-radius: var(--radius-lg);
+      background: var(--color-surface-2);
+      border: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+    }
+    .note-card .note-date {
+      font-size: var(--text-xs);
+      color: var(--color-text-faint);
+      margin-bottom: var(--space-2);
+    }
+    .note-card .note-text {
+      font-size: var(--text-sm);
+      white-space: pre-wrap;
+    }
+    .note-actions {
+      display: flex;
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+    }
+    .empty-state {
+      text-align: center;
+      padding: var(--space-10) var(--space-6);
+      color: var(--color-text-muted);
+    }
+    .empty-state p { font-size: var(--text-sm); margin-top: var(--space-2); }
+
     @media (max-width: 1024px) {
       .app { grid-template-columns: 1fr; }
       .sidebar { position: relative; height: auto; }
-      .col-5, .col-7, .col-4, .col-8 { grid-column: span 12; }
+      .col-3, .col-4, .col-5, .col-6, .col-7, .col-8 { grid-column: span 12; }
     }
     @media (max-width: 700px) {
       .main, .sidebar, .panel-pad { padding: var(--space-4); }
@@ -328,11 +474,11 @@
 
       <div class="sidebar-section">
         <h2>Views</h2>
-        <ul>
-          <li class="active">Household optimizer</li>
-          <li>Claiming timeline</li>
-          <li>Survivor impact</li>
-          <li>Notes</li>
+        <ul id="navList">
+          <li class="active" data-view="optimizer">Household optimizer</li>
+          <li data-view="timeline">Claiming timeline</li>
+          <li data-view="survivor">Survivor impact</li>
+          <li data-view="notes">Notes</li>
         </ul>
       </div>
 
@@ -343,7 +489,7 @@
 
       <div class="sidebar-section">
         <h2>Rules included</h2>
-        <ul class="small muted">
+        <ul class="small muted rules-list">
           <li>Retirement reduction before FRA.</li>
           <li>Delayed retirement credits to 70.</li>
           <li>Spousal add-on estimate.</li>
@@ -353,120 +499,225 @@
     </aside>
 
     <main class="main">
-      <section class="hero">
-        <div>
-          <h2>Model the tradeoff between filing early and waiting.</h2>
-          <p class="muted">This version is built for your own planning. It helps you compare household income, lifetime totals, and the surviving spouse's income under a few common strategies.</p>
-        </div>
-        <span class="tag">No login · local only</span>
-      </section>
 
-      <section class="grid">
-        <div class="col-5 panel panel-pad">
-          <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">Inputs</h3>
-          <div class="form-grid">
-            <div class="field">
-              <label for="p1name">Person 1 name</label>
-              <input id="p1name" value="You" />
+      <!-- ========== VIEW 1: HOUSEHOLD OPTIMIZER ========== -->
+      <div id="view-optimizer" class="view active">
+        <section class="hero">
+          <div>
+            <h2>Model the tradeoff between filing early and waiting.</h2>
+            <p class="muted">Compare household income, lifetime totals, and the surviving spouse's income under a few common strategies.</p>
+          </div>
+          <span class="tag">No login · local only</span>
+        </section>
+
+        <section class="grid">
+          <div class="col-5 panel panel-pad">
+            <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">Inputs</h3>
+            <div class="form-grid">
+              <div class="field">
+                <label for="p1name">Person 1 name</label>
+                <input id="p1name" value="You" />
+              </div>
+              <div class="field">
+                <label for="p2name">Person 2 name</label>
+                <input id="p2name" value="Spouse" />
+              </div>
+              <div class="field">
+                <label for="p1pia">Person 1 monthly benefit at FRA</label>
+                <input id="p1pia" type="number" min="0" step="1" value="2600" />
+              </div>
+              <div class="field">
+                <label for="p2pia">Person 2 monthly benefit at FRA</label>
+                <input id="p2pia" type="number" min="0" step="1" value="1400" />
+              </div>
+              <div class="field">
+                <label for="p1fra">Person 1 full retirement age</label>
+                <select id="p1fra">
+                  <option value="66">66</option>
+                  <option value="66.5">66 and 6 months</option>
+                  <option value="66.67">66 and 8 months</option>
+                  <option value="67" selected>67</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="p2fra">Person 2 full retirement age</label>
+                <select id="p2fra">
+                  <option value="66">66</option>
+                  <option value="66.5">66 and 6 months</option>
+                  <option value="66.67">66 and 8 months</option>
+                  <option value="67" selected>67</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="p1claim">Person 1 claim age</label>
+                <select id="p1claim"></select>
+              </div>
+              <div class="field">
+                <label for="p2claim">Person 2 claim age</label>
+                <select id="p2claim"></select>
+              </div>
+              <div class="field">
+                <label for="life1">Person 1 life expectancy</label>
+                <input id="life1" type="number" min="62" max="110" step="1" value="88" />
+              </div>
+              <div class="field">
+                <label for="life2">Person 2 life expectancy</label>
+                <input id="life2" type="number" min="62" max="110" step="1" value="92" />
+              </div>
             </div>
-            <div class="field">
-              <label for="p2name">Person 2 name</label>
-              <input id="p2name" value="Spouse" />
-            </div>
-            <div class="field">
-              <label for="p1pia">Person 1 monthly benefit at FRA</label>
-              <input id="p1pia" type="number" min="0" step="1" value="2600" />
-            </div>
-            <div class="field">
-              <label for="p2pia">Person 2 monthly benefit at FRA</label>
-              <input id="p2pia" type="number" min="0" step="1" value="1400" />
-            </div>
-            <div class="field">
-              <label for="p1fra">Person 1 full retirement age</label>
-              <select id="p1fra">
-                <option value="66">66</option>
-                <option value="66.5">66 and 6 months</option>
-                <option value="66.67">66 and 8 months</option>
-                <option value="67" selected>67</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="p2fra">Person 2 full retirement age</label>
-              <select id="p2fra">
-                <option value="66">66</option>
-                <option value="66.5">66 and 6 months</option>
-                <option value="66.67">66 and 8 months</option>
-                <option value="67" selected>67</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="p1claim">Person 1 claim age</label>
-              <select id="p1claim"></select>
-            </div>
-            <div class="field">
-              <label for="p2claim">Person 2 claim age</label>
-              <select id="p2claim"></select>
-            </div>
-            <div class="field">
-              <label for="life1">Person 1 life expectancy</label>
-              <input id="life1" type="number" min="62" max="110" step="1" value="88" />
-            </div>
-            <div class="field">
-              <label for="life2">Person 2 life expectancy</label>
-              <input id="life2" type="number" min="62" max="110" step="1" value="92" />
+            <div class="actions">
+              <button class="btn btn-primary" id="runBtn">Run strategy comparison</button>
+              <button class="btn" id="presetBtn">Load 62/67 sample</button>
             </div>
           </div>
-          <div class="actions">
-            <button class="btn btn-primary" id="runBtn">Run strategy comparison</button>
-            <button class="btn" id="presetBtn">Load 62/67 sample</button>
+
+          <div class="col-7 panel panel-pad">
+            <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">Snapshot</h3>
+            <div class="metrics" id="metrics"></div>
+            <div class="bar-wrap" id="bars"></div>
           </div>
-        </div>
 
-        <div class="col-7 panel panel-pad">
-          <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">Snapshot</h3>
-          <div class="metrics" id="metrics"></div>
-          <div class="bar-wrap" id="bars"></div>
-        </div>
-
-        <div class="col-8 panel panel-pad">
-          <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">Strategies</h3>
-          <div style="overflow:auto;">
-            <table class="result-table" id="resultsTable">
-              <thead>
-                <tr>
-                  <th>Strategy</th>
-                  <th>Monthly at start</th>
-                  <th>Estimated lifetime benefits</th>
-                  <th>Survivor monthly</th>
-                  <th>Notes</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
+          <div class="col-8 panel panel-pad">
+            <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">Strategies</h3>
+            <div style="overflow:auto;">
+              <table class="result-table" id="resultsTable">
+                <thead>
+                  <tr>
+                    <th>Strategy</th>
+                    <th>Monthly at start</th>
+                    <th>Estimated lifetime benefits</th>
+                    <th>Survivor monthly</th>
+                    <th>Notes</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
           </div>
-        </div>
 
-        <div class="col-4 panel panel-pad">
-          <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">Planner notes</h3>
-          <div class="callout small" id="notesBox"></div>
-        </div>
+          <div class="col-4 panel panel-pad">
+            <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">Planner notes</h3>
+            <div class="callout small" id="notesBox"></div>
+          </div>
 
+          <div class="col-12 panel panel-pad">
+            <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-2);">Break-even chart</h3>
+            <p class="footer-note" style="margin-bottom: var(--space-4);">This chart plots cumulative household benefits by age so you can see where waiting overtakes claiming early.</p>
+            <canvas id="breakevenChart" height="110" aria-label="Break-even chart" role="img"></canvas>
+            <p class="small muted" id="breakevenText" style="margin-top: var(--space-4);"></p>
+          </div>
 
-        <div class="col-12 panel panel-pad">
-          <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-2);">Break-even chart</h3>
-          <p class="footer-note" style="margin-bottom: var(--space-4);">This chart plots cumulative household benefits by age so you can see where waiting overtakes claiming early.</p>
-          <canvas id="breakevenChart" height="110" aria-label="Break-even chart" role="img"></canvas>
-          <p class="small muted" id="breakevenText" style="margin-top: var(--space-4);"></p>
-        </div>
-        <div class="col-12 panel panel-pad">
-          <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">What this version covers</h3>
-          <p class="footer-note">This app uses simplified claiming math for retirement, delayed credits, a spousal top-up estimate, and survivor step-up logic. It is useful for personal comparisons, but it does not yet model earnings tests, taxes, deemed filing edge cases, restricted applications, government pension offsets, or exact SSA month-by-month calculations.</p>
-        </div>
-      </section>
+          <div class="col-12 panel panel-pad">
+            <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">What this version covers</h3>
+            <p class="footer-note">This app uses simplified claiming math for retirement, delayed credits, a spousal top-up estimate, and survivor step-up logic. It is useful for personal comparisons, but it does not yet model earnings tests, taxes, deemed filing edge cases, restricted applications, government pension offsets, or exact SSA month-by-month calculations.</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- ========== VIEW 2: CLAIMING TIMELINE ========== -->
+      <div id="view-timeline" class="view">
+        <section class="hero">
+          <div>
+            <h2>Your claiming timeline</h2>
+            <p class="muted">A year-by-year view of when each person files, what they receive, and key milestones along the way.</p>
+          </div>
+        </section>
+
+        <section class="grid">
+          <div class="col-8 panel panel-pad">
+            <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">Timeline</h3>
+            <div class="timeline" id="timelineContainer"></div>
+          </div>
+
+          <div class="col-4">
+            <div class="panel panel-pad" style="margin-bottom: var(--space-6);">
+              <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">Summary</h3>
+              <div id="timelineSummary"></div>
+            </div>
+            <div class="panel panel-pad">
+              <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">Monthly income by phase</h3>
+              <canvas id="phaseChart" height="200" aria-label="Monthly income by phase" role="img"></canvas>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ========== VIEW 3: SURVIVOR IMPACT ========== -->
+      <div id="view-survivor" class="view">
+        <section class="hero">
+          <div>
+            <h2>Survivor impact analysis</h2>
+            <p class="muted">See how the surviving spouse's income changes under different claiming strategies. The survivor generally steps up to the larger of the two benefits.</p>
+          </div>
+        </section>
+
+        <section class="grid">
+          <div class="col-6 panel panel-pad">
+            <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">If Person 1 passes first</h3>
+            <div id="survivor-p1-first" class="survivor-scenarios"></div>
+          </div>
+
+          <div class="col-6 panel panel-pad">
+            <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">If Person 2 passes first</h3>
+            <div id="survivor-p2-first" class="survivor-scenarios"></div>
+          </div>
+
+          <div class="col-12 panel panel-pad">
+            <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-2);">Survivor benefit comparison</h3>
+            <p class="footer-note" style="margin-bottom: var(--space-4);">Monthly survivor income across strategies, for each scenario.</p>
+            <canvas id="survivorChart" height="100" aria-label="Survivor benefit comparison chart" role="img"></canvas>
+          </div>
+
+          <div class="col-12 panel panel-pad">
+            <div class="callout-info small">
+              <strong>How survivor benefits work (simplified):</strong> When one spouse passes, the surviving spouse keeps the larger of their own benefit or the deceased spouse's benefit. Delaying the higher earner's claim generally increases the survivor benefit because the deceased's delayed credits carry over. This tool estimates the step-up; actual survivor calculations may differ based on SSA rules.
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ========== VIEW 4: NOTES ========== -->
+      <div id="view-notes" class="view">
+        <section class="hero">
+          <div>
+            <h2>Planning notes</h2>
+            <p class="muted">Keep track of your thoughts, questions for your advisor, and decisions about your claiming strategy. Notes are saved in your browser.</p>
+          </div>
+        </section>
+
+        <section class="grid">
+          <div class="col-8">
+            <div class="panel panel-pad" style="margin-bottom: var(--space-6);">
+              <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">Add a note</h3>
+              <div class="field">
+                <textarea id="noteInput" placeholder="e.g., Ask advisor about spousal benefit timing, or remind yourself why you chose age 67..."></textarea>
+              </div>
+              <div class="actions">
+                <button class="btn btn-primary btn-sm" id="addNoteBtn">Save note</button>
+              </div>
+            </div>
+
+            <div id="notesList" class="notes-list"></div>
+          </div>
+
+          <div class="col-4 panel panel-pad">
+            <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">Quick reference</h3>
+            <div class="callout-info small" style="margin-bottom: var(--space-4);">
+              <strong>Current inputs:</strong>
+              <div id="notesQuickRef" style="margin-top: var(--space-2);"></div>
+            </div>
+            <div class="callout small">
+              <strong>Tip:</strong> Use notes to record why you chose specific claiming ages, questions for your financial advisor, or action items. Notes are stored locally in your browser and persist between visits.
+            </div>
+          </div>
+        </section>
+      </div>
+
     </main>
   </div>
 
   <script>
+    /* ===================== THEME ===================== */
     const html = document.documentElement;
     const themeButton = document.querySelector('[data-theme-toggle]');
     let theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -479,6 +730,24 @@
     themeButton.addEventListener('click', () => { theme = theme === 'dark' ? 'light' : 'dark'; renderThemeIcon(); });
     renderThemeIcon();
 
+    /* ===================== NAVIGATION ===================== */
+    const navItems = document.querySelectorAll('#navList li');
+    const views = document.querySelectorAll('.view');
+
+    function switchView(viewId) {
+      navItems.forEach(li => li.classList.toggle('active', li.dataset.view === viewId));
+      views.forEach(v => v.classList.toggle('active', v.id === 'view-' + viewId));
+      // Re-render active view data
+      if (viewId === 'timeline') renderTimeline();
+      if (viewId === 'survivor') renderSurvivor();
+      if (viewId === 'notes') renderNotes();
+    }
+
+    navItems.forEach(li => {
+      li.addEventListener('click', () => switchView(li.dataset.view));
+    });
+
+    /* ===================== CLAIM OPTIONS ===================== */
     const claimOptions = [];
     for (let age = 62; age <= 70; age += 1) claimOptions.push(age);
     ['p1claim', 'p2claim'].forEach(id => {
@@ -492,8 +761,9 @@
       });
     });
 
+    /* ===================== CORE MATH ===================== */
     const money = n => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
-    let breakevenChart;
+    let breakevenChart, phaseChart, survivorChart;
 
     function monthlyBenefit(pia, fra, claimAge) {
       const monthsDiff = Math.round((claimAge - fra) * 12);
@@ -524,13 +794,15 @@
       const aOwn = monthlyBenefit(a.pia, a.fra, a.claim);
       const bOwn = monthlyBenefit(b.pia, b.fra, b.claim);
       const bSpousalAddon = spousalBenefit(a.pia, b.pia, b.claim, b.fra);
+      const aSpousalAddon = spousalBenefit(b.pia, a.pia, a.claim, a.fra);
       const bFinal = bOwn + bSpousalAddon;
-      const survivorMonthly = Math.max(aOwn, bFinal);
+      const aFinal = aOwn + aSpousalAddon;
+      const survivorMonthly = Math.max(aFinal, bFinal);
       const ages = [];
       let cumulative = 0;
       for (let age = 62; age <= maxAge; age += 1) {
         let annual = 0;
-        if (age >= a.claim && age < a.life) annual += aOwn * 12;
+        if (age >= a.claim && age < a.life) annual += aFinal * 12;
         if (age >= b.claim && age < b.life) annual += bFinal * 12;
         if (age >= Math.min(a.life, b.life) && age < Math.max(a.life, b.life)) {
           annual += survivorMonthly * 12;
@@ -538,19 +810,19 @@
         cumulative += annual;
         ages.push({ age, cumulative });
       }
-      return { aOwn, bOwn, bSpousalAddon, bFinal, survivorMonthly, ages };
+      return { aOwn, bOwn, aFinal, bFinal, bSpousalAddon, aSpousalAddon, survivorMonthly, ages };
     }
 
     function evaluateScenario(input, scenario) {
       const series = cumulativeSeries(input, scenario);
-      const startMonthly = (scenario.c1 <= 62 ? series.aOwn : 0) + (scenario.c2 <= 62 ? series.bFinal : 0) || (series.aOwn + series.bFinal);
+      const startMonthly = (scenario.c1 <= 62 ? series.aFinal : 0) + (scenario.c2 <= 62 ? series.bFinal : 0) || (series.aFinal + series.bFinal);
       const total = series.ages[series.ages.length - 1].cumulative;
       return {
         ...scenario,
         ...series,
         startMonthly,
         total,
-        notes: series.bSpousalAddon > 0 ? 'Includes estimated spousal add-on.' : 'Each spouse uses own record.'
+        notes: (series.bSpousalAddon > 0 || series.aSpousalAddon > 0) ? 'Includes estimated spousal add-on.' : 'Each spouse uses own record.'
       };
     }
 
@@ -561,7 +833,37 @@
       return null;
     }
 
-    function renderChart(results) {
+    function collectInput() {
+      return {
+        person1: {
+          name: document.getElementById('p1name').value || 'Person 1',
+          pia: Number(document.getElementById('p1pia').value || 0),
+          fra: Number(document.getElementById('p1fra').value || 67),
+          claim: Number(document.getElementById('p1claim').value || 62),
+          life: Number(document.getElementById('life1').value || 88)
+        },
+        person2: {
+          name: document.getElementById('p2name').value || 'Person 2',
+          pia: Number(document.getElementById('p2pia').value || 0),
+          fra: Number(document.getElementById('p2fra').value || 67),
+          claim: Number(document.getElementById('p2claim').value || 67),
+          life: Number(document.getElementById('life2').value || 92)
+        }
+      };
+    }
+
+    function buildScenarios(input) {
+      return [
+        { name: 'Chosen ages', c1: input.person1.claim, c2: input.person2.claim },
+        { name: 'Both at 62', c1: 62, c2: 62 },
+        { name: 'Both at FRA', c1: input.person1.fra, c2: input.person2.fra },
+        { name: 'Higher earner at 70', c1: input.person1.pia >= input.person2.pia ? 70 : 62, c2: input.person1.pia >= input.person2.pia ? 62 : 70 },
+        { name: 'Delay both to 70', c1: 70, c2: 70 }
+      ];
+    }
+
+    /* ===================== VIEW 1: OPTIMIZER ===================== */
+    function renderBreakevenChart(results) {
       const chosen = results.find(r => r.name === 'Chosen ages') || results[0];
       const both62 = results.find(r => r.name === 'Both at 62');
       const bothFRA = results.find(r => r.name === 'Both at FRA');
@@ -601,35 +903,6 @@
       document.getElementById('breakevenText').textContent = `Estimated household break-even ages: 62 vs FRA ${breakEvenFRA ? 'around age ' + breakEvenFRA : 'not reached in the chart window'}, 62 vs 70 ${breakEven70 ? 'around age ' + breakEven70 : 'not reached in the chart window'}.`;
     }
 
-    function collectInput() {
-      return {
-        person1: {
-          name: document.getElementById('p1name').value || 'Person 1',
-          pia: Number(document.getElementById('p1pia').value || 0),
-          fra: Number(document.getElementById('p1fra').value || 67),
-          claim: Number(document.getElementById('p1claim').value || 62),
-          life: Number(document.getElementById('life1').value || 88)
-        },
-        person2: {
-          name: document.getElementById('p2name').value || 'Person 2',
-          pia: Number(document.getElementById('p2pia').value || 0),
-          fra: Number(document.getElementById('p2fra').value || 67),
-          claim: Number(document.getElementById('p2claim').value || 67),
-          life: Number(document.getElementById('life2').value || 92)
-        }
-      };
-    }
-
-    function buildScenarios(input) {
-      return [
-        { name: 'Chosen ages', c1: input.person1.claim, c2: input.person2.claim },
-        { name: 'Both at 62', c1: 62, c2: 62 },
-        { name: 'Both at FRA', c1: input.person1.fra, c2: input.person2.fra },
-        { name: 'Higher earner at 70', c1: input.person1.pia >= input.person2.pia ? 70 : 62, c2: input.person1.pia >= input.person2.pia ? 62 : 70 },
-        { name: 'Delay both to 70', c1: 70, c2: 70 }
-      ];
-    }
-
     function render() {
       const input = collectInput();
       const results = buildScenarios(input).map(s => evaluateScenario(input, s)).sort((a, b) => b.total - a.total);
@@ -663,7 +936,7 @@
 
       const diff = winner.total - selected.total;
       const higherEarner = input.person1.pia >= input.person2.pia ? input.person1.name : input.person2.name;
-      renderChart(results);
+      renderBreakevenChart(results);
       document.getElementById('notesBox').innerHTML = `
         <p><strong>${winner.name}</strong> currently produces the highest estimated lifetime household benefit.</p>
         <br>
@@ -673,6 +946,278 @@
       `;
     }
 
+    /* ===================== VIEW 2: CLAIMING TIMELINE ===================== */
+    function renderTimeline() {
+      const input = collectInput();
+      const p1 = input.person1;
+      const p2 = input.person2;
+      const p1monthly = monthlyBenefit(p1.pia, p1.fra, p1.claim);
+      const p2monthly = monthlyBenefit(p2.pia, p2.fra, p2.claim);
+      const p2spousal = spousalBenefit(p1.pia, p2.pia, p2.claim, p2.fra);
+      const p1spousal = spousalBenefit(p2.pia, p1.pia, p1.claim, p1.fra);
+      const p1total = p1monthly + p1spousal;
+      const p2total = p2monthly + p2spousal;
+      const survivorMonthly = Math.max(p1total, p2total);
+
+      const events = [];
+      const earliestClaim = Math.min(p1.claim, p2.claim);
+      const latestClaim = Math.max(p1.claim, p2.claim);
+      const firstToDie = p1.life < p2.life ? p1 : p2;
+      const secondToDie = p1.life < p2.life ? p2 : p1;
+
+      // Phase: Before anyone claims
+      if (earliestClaim > 62) {
+        events.push({ age: 62, label: 'Earliest eligible age', desc: 'Neither person has filed yet. Benefits are not being collected.', amount: null, type: 'future' });
+      }
+
+      // First claim
+      const firstClaimer = p1.claim <= p2.claim ? p1 : p2;
+      const firstClaimerMonthly = p1.claim <= p2.claim ? p1total : p2total;
+      events.push({ age: firstClaimer.claim, label: `${firstClaimer.name} files at age ${firstClaimer.claim}`, desc: `${firstClaimer.name} begins collecting benefits.`, amount: firstClaimerMonthly, type: 'active' });
+
+      // Second claim (if different)
+      if (p1.claim !== p2.claim) {
+        const secondClaimer = p1.claim > p2.claim ? p1 : p2;
+        const secondClaimerMonthly = p1.claim > p2.claim ? p1total : p2total;
+        const combinedMonthly = p1total + p2total;
+        events.push({ age: secondClaimer.claim, label: `${secondClaimer.name} files at age ${secondClaimer.claim}`, desc: `Both are now collecting. Combined household income: ${money(combinedMonthly)}/mo.`, amount: secondClaimerMonthly, type: 'active' });
+      } else {
+        const combinedMonthly = p1total + p2total;
+        events[events.length - 1].desc = `Both file at the same age. Combined household income: ${money(combinedMonthly)}/mo.`;
+        events[events.length - 1].amount = combinedMonthly;
+      }
+
+      // FRA milestones (if not already a claim event)
+      [p1, p2].forEach(p => {
+        if (p.fra !== p.claim && p.fra > earliestClaim) {
+          events.push({ age: p.fra, label: `${p.name} reaches FRA (${p.fra})`, desc: `Full retirement age milestone for ${p.name}.`, amount: null, type: 'milestone' });
+        }
+      });
+
+      // First death
+      events.push({ age: firstToDie.life, label: `${firstToDie.name} passes (age ${firstToDie.life})`, desc: `${secondToDie.name} steps up to survivor benefit of ${money(survivorMonthly)}/mo.`, amount: survivorMonthly, type: 'survivor' });
+
+      // Second death
+      events.push({ age: secondToDie.life, label: `${secondToDie.name} passes (age ${secondToDie.life})`, desc: 'Benefits end.', amount: null, type: 'end' });
+
+      events.sort((a, b) => a.age - b.age);
+
+      const container = document.getElementById('timelineContainer');
+      container.innerHTML = events.map(e => {
+        const dotClass = e.type === 'active' ? 'active-dot' : e.type === 'survivor' ? 'past-dot' : '';
+        return `
+          <div class="tl-item">
+            <div class="tl-dot ${dotClass}">${e.age}</div>
+            <div class="tl-content">
+              <h4>${e.label}</h4>
+              <p>${e.desc}</p>
+              ${e.amount ? `<span class="tl-amount">${money(e.amount)}/mo</span>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Summary panel
+      const totalYearsCollecting = Math.max(p1.life - p1.claim, 0) + Math.max(p2.life - p2.claim, 0);
+      document.getElementById('timelineSummary').innerHTML = `
+        <div class="metric" style="margin-bottom: var(--space-3);">
+          <div class="label">First benefit starts</div>
+          <div class="value">Age ${earliestClaim}</div>
+        </div>
+        <div class="metric" style="margin-bottom: var(--space-3);">
+          <div class="label">Both collecting by</div>
+          <div class="value">Age ${latestClaim}</div>
+        </div>
+        <div class="metric" style="margin-bottom: var(--space-3);">
+          <div class="label">Combined monthly</div>
+          <div class="value">${money(p1total + p2total)}</div>
+        </div>
+        <div class="metric">
+          <div class="label">Survivor monthly</div>
+          <div class="value">${money(survivorMonthly)}</div>
+        </div>
+      `;
+
+      // Phase chart
+      const phases = [];
+      if (p1.claim !== p2.claim) {
+        phases.push({ label: `${firstClaimer.name} only`, value: firstClaimerMonthly });
+      }
+      phases.push({ label: 'Both collecting', value: p1total + p2total });
+      phases.push({ label: 'Survivor phase', value: survivorMonthly });
+
+      const ctx = document.getElementById('phaseChart');
+      if (phaseChart) phaseChart.destroy();
+      phaseChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: phases.map(p => p.label),
+          datasets: [{
+            data: phases.map(p => Math.round(p.value)),
+            backgroundColor: ['#01696f', '#437a22', '#964219'],
+            borderRadius: 6,
+            barThickness: 40
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: c => money(c.parsed.y) + '/mo' } }
+          },
+          scales: {
+            y: { ticks: { callback: v => '$' + (v/1000).toFixed(1) + 'k' }, beginAtZero: true },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+    }
+
+    /* ===================== VIEW 3: SURVIVOR IMPACT ===================== */
+    function renderSurvivor() {
+      const input = collectInput();
+      const scenarios = buildScenarios(input);
+      const results = scenarios.map(s => evaluateScenario(input, s));
+
+      function survivorCalc(result, whoFirst) {
+        // whoFirst: 1 = person1 dies first, 2 = person2 dies first
+        if (whoFirst === 1) {
+          // Person 2 survives, steps up to max(their own, person1's)
+          return Math.max(result.aFinal, result.bFinal);
+        } else {
+          // Person 1 survives
+          return Math.max(result.aFinal, result.bFinal);
+        }
+      }
+
+      function renderCards(containerId, whoFirst) {
+        const container = document.getElementById(containerId);
+        const input2 = collectInput();
+        const survivor = whoFirst === 1 ? input2.person2 : input2.person1;
+        container.innerHTML = results.map(r => {
+          const survBenefit = survivorCalc(r, whoFirst);
+          const ownBenefit = whoFirst === 1 ? r.bFinal : r.aFinal;
+          const stepUp = survBenefit - ownBenefit;
+          return `
+            <div class="survivor-card">
+              <h4>${r.name}</h4>
+              <div class="amount">${money(survBenefit)}/mo</div>
+              <p>${survivor.name} ${stepUp > 0 ? `steps up by ${money(stepUp)}/mo from their own ${money(ownBenefit)}/mo` : 'keeps their own benefit (already the higher amount)'}.</p>
+              <p>Claim ages: Person 1 at ${r.c1}, Person 2 at ${r.c2}</p>
+            </div>
+          `;
+        }).join('');
+      }
+
+      renderCards('survivor-p1-first', 1);
+      renderCards('survivor-p2-first', 2);
+
+      // Survivor chart
+      const strategyLabels = results.map(r => r.name);
+      const p1FirstData = results.map(r => Math.round(survivorCalc(r, 1)));
+      const p2FirstData = results.map(r => Math.round(survivorCalc(r, 2)));
+
+      const ctx = document.getElementById('survivorChart');
+      if (survivorChart) survivorChart.destroy();
+      survivorChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: strategyLabels,
+          datasets: [
+            { label: input.person1.name + ' passes first', data: p1FirstData, backgroundColor: '#01696f', borderRadius: 6 },
+            { label: input.person2.name + ' passes first', data: p2FirstData, backgroundColor: '#964219', borderRadius: 6 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: { position: 'bottom' },
+            tooltip: { callbacks: { label: c => `${c.dataset.label}: ${money(c.parsed.y)}/mo` } }
+          },
+          scales: {
+            y: { ticks: { callback: v => '$' + (v/1000).toFixed(1) + 'k' }, beginAtZero: true },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+    }
+
+    /* ===================== VIEW 4: NOTES ===================== */
+    function getNotes() {
+      try { return JSON.parse(localStorage.getItem('claimwise-notes') || '[]'); }
+      catch { return []; }
+    }
+    function saveNotes(notes) {
+      localStorage.setItem('claimwise-notes', JSON.stringify(notes));
+    }
+
+    function renderNotes() {
+      const notes = getNotes();
+      const list = document.getElementById('notesList');
+
+      if (notes.length === 0) {
+        list.innerHTML = `
+          <div class="empty-state">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--color-text-faint);">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <p>No notes yet. Add your first planning note above.</p>
+          </div>
+        `;
+      } else {
+        list.innerHTML = notes.map((n, idx) => `
+          <div class="note-card">
+            <div class="note-date">${new Date(n.date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</div>
+            <div class="note-text">${escapeHtml(n.text)}</div>
+            <div class="note-actions">
+              <button class="btn btn-sm btn-danger" onclick="deleteNote(${idx})">Delete</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Quick reference
+      const input = collectInput();
+      document.getElementById('notesQuickRef').innerHTML = `
+        <p>${input.person1.name}: PIA ${money(input.person1.pia)}, claim at ${input.person1.claim}, FRA ${input.person1.fra}</p>
+        <p>${input.person2.name}: PIA ${money(input.person2.pia)}, claim at ${input.person2.claim}, FRA ${input.person2.fra}</p>
+        <p>Life expectancies: ${input.person1.life} / ${input.person2.life}</p>
+      `;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function addNote() {
+      const textarea = document.getElementById('noteInput');
+      const text = textarea.value.trim();
+      if (!text) return;
+      const notes = getNotes();
+      notes.unshift({ text, date: new Date().toISOString() });
+      saveNotes(notes);
+      textarea.value = '';
+      renderNotes();
+    }
+
+    function deleteNote(idx) {
+      const notes = getNotes();
+      notes.splice(idx, 1);
+      saveNotes(notes);
+      renderNotes();
+    }
+
+    document.getElementById('addNoteBtn').addEventListener('click', addNote);
+
+    /* ===================== INIT ===================== */
     document.getElementById('runBtn').addEventListener('click', render);
     document.getElementById('presetBtn').addEventListener('click', () => {
       document.getElementById('p1claim').value = '62';
