@@ -41,26 +41,7 @@
       --font-display: 'Satoshi', Inter, sans-serif;
     }
 
-    [data-theme="dark"] {
-      --color-bg: #171614;
-      --color-surface: #1c1b19;
-      --color-surface-2: #201f1d;
-      --color-surface-offset: #242320;
-      --color-border: #393836;
-      --color-divider: #2b2a28;
-      --color-text: #ece9e2;
-      --color-text-muted: #b2aca2;
-      --color-text-faint: #7a766e;
-      --color-text-inverse: #171614;
-      --color-primary: #4f98a3;
-      --color-primary-hover: #6caab3;
-      --color-primary-highlight: #243537;
-      --color-success: #7db85a;
-      --color-warning: #d18a61;
-      --color-danger: #d9645f;
-      --shadow-sm: 0 1px 2px rgba(0,0,0,0.25);
-      --shadow-md: 0 8px 24px rgba(0,0,0,0.28);
-    }
+
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { min-height: 100%; }
@@ -469,7 +450,7 @@
             <p class="small">Personal Social Security optimizer</p>
           </div>
         </div>
-        <button class="theme-toggle" data-theme-toggle aria-label="Switch theme"></button>
+
       </div>
 
       <div class="sidebar-section">
@@ -704,18 +685,7 @@
   </div>
 
   <script>
-    /* ===================== THEME ===================== */
-    const html = document.documentElement;
-    const themeButton = document.querySelector('[data-theme-toggle]');
-    let theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    function renderThemeIcon() {
-      html.setAttribute('data-theme', theme);
-      themeButton.innerHTML = theme === 'dark'
-        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>'
-        : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>';
-    }
-    themeButton.addEventListener('click', () => { theme = theme === 'dark' ? 'light' : 'dark'; renderThemeIcon(); });
-    renderThemeIcon();
+    document.documentElement.setAttribute('data-theme', 'light');
 
     /* ===================== NAVIGATION ===================== */
     const navItems = document.querySelectorAll('#navList li');
