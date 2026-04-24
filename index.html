@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Social Security Optimizer</title>
+  <title>Claimwise — Personal Social Security Optimizer</title>
   <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
   <style>
     :root, [data-theme="light"] {
@@ -17,21 +17,25 @@
       --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem;
       --space-12: 3rem; --space-16: 4rem;
 
-      --color-bg: #f7f6f2;
-      --color-surface: #f9f8f5;
-      --color-surface-2: #fbfbf9;
-      --color-surface-offset: #f3f0ec;
-      --color-border: #d4d1ca;
-      --color-divider: #dcd9d5;
-      --color-text: #28251d;
-      --color-text-muted: #66635d;
-      --color-text-faint: #98958d;
-      --color-text-inverse: #f9f8f4;
-      --color-primary: #01696f;
-      --color-primary-hover: #0c4e54;
-      --color-primary-highlight: #d7e8e7;
-      --color-success: #437a22;
-      --color-warning: #964219;
+      /* Claimwise palette (navy / emerald / cream) */
+      --color-bg: #f8f6f1;
+      --color-surface: #ffffff;
+      --color-surface-2: #fbfaf6;
+      --color-surface-offset: #f3f0ea;
+      --color-border: #d9d4c7;
+      --color-divider: #e4dfd2;
+      --color-text: #102a52;
+      --color-text-muted: #5b6a80;
+      --color-text-faint: #9aa3b2;
+      --color-text-inverse: #f8f6f1;
+      --color-primary: #102a52;       /* navy */
+      --color-primary-hover: #0a1d3a;
+      --color-primary-highlight: #e3e8f2;
+      --color-accent: #16a37a;        /* emerald */
+      --color-accent-hover: #128263;
+      --color-accent-highlight: #d7f0e5;
+      --color-success: #16a37a;
+      --color-warning: #a85a1f;
       --color-danger: #b5332e;
       --radius-sm: 0.375rem; --radius-md: 0.625rem; --radius-lg: 0.875rem; --radius-xl: 1rem; --radius-full: 9999px;
       --shadow-sm: 0 1px 2px rgba(32, 30, 26, 0.06);
@@ -502,15 +506,109 @@
     }
     .empty-state p { font-size: var(--text-sm); margin-top: var(--space-2); }
 
+    /* ==================== MOBILE TOP BAR + DRAWER ==================== */
+    .mobile-topbar {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-divider);
+      padding: 10px 14px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .mobile-topbar .mt-brand {
+      display: flex; align-items: center; gap: 10px; min-width: 0;
+    }
+    .mobile-topbar .mt-brand .mt-logo {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: grid; place-items: center; flex: 0 0 auto;
+    }
+    .mobile-topbar .mt-brand h1 {
+      font-size: 1rem; line-height: 1.1; margin: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .mobile-topbar .mt-view {
+      font-size: 0.75rem; color: var(--color-text-muted);
+      margin: 0; line-height: 1;
+    }
+    .mobile-topbar button.menu-toggle {
+      width: 44px; height: 44px;
+      display: grid; place-items: center;
+      background: transparent;
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      flex: 0 0 auto;
+    }
+    .mobile-topbar button.menu-toggle svg { display: block; }
+    .drawer-backdrop {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(16, 42, 82, 0.55);
+      z-index: 95;
+      opacity: 0;
+      transition: opacity 200ms ease;
+    }
+    .drawer-backdrop.open { display: block; opacity: 1; }
+    body.drawer-open { overflow: hidden; }
+    .mobile-run-bar { display: none; }
+    .mobile-run-bar.hidden-view { display: none !important; }
+
     @media (max-width: 1024px) {
       .app { grid-template-columns: 1fr; }
       .sidebar { position: relative; height: auto; }
       .col-3, .col-4, .col-5, .col-6, .col-7, .col-8 { grid-column: span 12; }
     }
-    @media (max-width: 700px) {
-      .main, .sidebar, .panel-pad { padding: var(--space-4); }
+
+    @media (max-width: 900px) {
+      .mobile-topbar { display: flex; }
+      .app { display: block; min-height: 100vh; }
+      .sidebar {
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        width: 84vw;
+        max-width: 320px;
+        height: 100vh;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 10px 40px rgba(16, 42, 82, 0.2);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .sidebar.open { transform: translateX(0); }
+      .main { padding: var(--space-4); padding-bottom: 96px; }
+      .sidebar, .panel-pad { padding: var(--space-4); }
       .form-grid, .metrics { grid-template-columns: 1fr; }
-      .bar-row { grid-template-columns: 70px 1fr 88px; }
+      .bar-row { grid-template-columns: 72px 1fr 92px; gap: 8px; }
+      .sidebar nav ul li, #navList li { padding: 14px 12px; font-size: 15px; }
+      .sidebar .logo-row { display: none; }
+      .hero { flex-direction: column; align-items: stretch; gap: var(--space-3); }
+      .hero .tag { align-self: flex-start; }
+      input, select, textarea { padding: 12px 14px; font-size: 16px; }
+      .btn { min-height: 44px; }
+      .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 calc(-1 * var(--space-4)); padding: 0 var(--space-4); }
+      .table-wrap table { min-width: 520px; }
+      .mobile-run-bar {
+        display: flex;
+        position: fixed;
+        left: 0; right: 0; bottom: 0;
+        padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0));
+        background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+        backdrop-filter: saturate(1.2) blur(8px);
+        -webkit-backdrop-filter: saturate(1.2) blur(8px);
+        border-top: 1px solid var(--color-divider);
+        z-index: 40;
+        gap: 8px;
+      }
+      .mobile-run-bar .btn { flex: 1; min-height: 48px; font-weight: 700; }
+      #view-optimizer .actions #runBtn { display: none; }
+    }
+
+    @media (min-width: 901px) {
+      .drawer-backdrop { display: none !important; }
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -585,15 +683,37 @@
   </div>
 
   <div class="app" id="appContainer" style="display:none;">
-    <aside class="sidebar">
+    <header class="mobile-topbar" role="banner">
+      <div class="mt-brand">
+        <div class="mt-logo" aria-hidden="true">
+          <svg viewBox="0 0 48 48" width="26" height="26" aria-hidden="true">
+            <g transform="translate(24 24) rotate(45)">
+              <rect x="-16" y="-16" width="32" height="32" fill="#102a52"/>
+              <rect x="-9" y="-9" width="18" height="18" fill="#16a37a"/>
+              <rect x="-3.2" y="-3.2" width="6.4" height="6.4" fill="#f8f6f1"/>
+            </g>
+          </svg>
+        </div>
+        <div style="min-width:0;">
+          <h1>Claimwise</h1>
+          <p class="mt-view" id="mtCurrentView">Household optimizer</p>
+        </div>
+      </div>
+      <button type="button" class="menu-toggle" id="mobileMenuToggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="appSidebar">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </header>
+    <div class="drawer-backdrop" id="drawerBackdrop" aria-hidden="true"></div>
+    <aside class="sidebar" id="appSidebar">
       <div class="logo-row">
         <div class="brand">
           <div class="logo" aria-hidden="true">
-            <svg viewBox="0 0 48 48" width="26" height="26" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Optimizer logo">
-              <path d="M10 31c4-10 10-15 18-15 4.8 0 8.5 1.7 10 4.5" />
-              <path d="M12 35h24" />
-              <path d="M30 14v18" />
-              <circle cx="30" cy="31" r="3.8" fill="currentColor" stroke="none" />
+            <svg viewBox="0 0 48 48" width="28" height="28" aria-label="Claimwise logo">
+              <g transform="translate(24 24) rotate(45)">
+                <rect x="-16" y="-16" width="32" height="32" fill="#102a52"/>
+                <rect x="-9" y="-9" width="18" height="18" fill="#16a37a"/>
+                <rect x="-3.2" y="-3.2" width="6.4" height="6.4" fill="#f8f6f1"/>
+              </g>
             </svg>
           </div>
           <div>
@@ -635,11 +755,11 @@
             <div class="form-grid">
               <div class="field">
                 <label for="p1name">Person 1 name</label>
-                <input id="p1name" value="You" />
+                <input id="p1name" placeholder="e.g. You" autocomplete="off" />
               </div>
               <div class="field">
                 <label for="p2name">Person 2 name</label>
-                <input id="p2name" value="Spouse" />
+                <input id="p2name" placeholder="e.g. Spouse" autocomplete="off" />
               </div>
               <div class="field">
                 <label for="p1pia">Person 1 monthly benefit at FRA</label>
@@ -686,7 +806,7 @@
             </div>
             <div class="actions">
               <button class="btn btn-primary" id="runBtn">Run strategy comparison</button>
-              <button class="btn" id="presetBtn">Load 62/67 sample</button>
+              <button class="btn" id="presetBtn" title="Clear all inputs and start fresh">New case</button>
               <button class="btn" id="downloadPdfBtn" style="display:none;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><path d="M8 2v8m0 0l-3-3m3 3l3-3M3 13h10"/></svg>Download PDF report</button>
             </div>
           </div>
@@ -699,7 +819,7 @@
 
           <div class="col-8 panel panel-pad">
             <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">Strategies</h3>
-            <div style="overflow:auto;">
+            <div class="table-wrap" style="overflow:auto;">
               <table class="result-table" id="resultsTable">
                 <thead>
                   <tr>
@@ -799,6 +919,11 @@
 
 
     </main>
+
+    <!-- Sticky bottom action bar (mobile only, optimizer view only) -->
+    <div class="mobile-run-bar" id="mobileRunBar" aria-hidden="true">
+      <button class="btn btn-primary" id="mobileRunBtn" type="button">Run strategy comparison</button>
+    </div>
   </div>
 
   <script>
@@ -831,14 +956,62 @@
     const navItems = document.querySelectorAll('#navList li');
     const views = document.querySelectorAll('.view');
 
+    const VIEW_LABELS = {
+      optimizer: 'Household optimizer',
+      timeline: 'Claiming timeline',
+      survivor: 'Survivor impact'
+    };
+
     function switchView(viewId) {
       navItems.forEach(li => li.classList.toggle('active', li.dataset.view === viewId));
       views.forEach(v => v.classList.toggle('active', v.id === 'view-' + viewId));
-      // Re-render active view data
+      const mt = document.getElementById('mtCurrentView');
+      if (mt) mt.textContent = VIEW_LABELS[viewId] || '';
+      const runBar = document.getElementById('mobileRunBar');
+      if (runBar) runBar.classList.toggle('hidden-view', viewId !== 'optimizer');
+      closeDrawer();
       if (viewId === 'timeline') renderTimeline();
       if (viewId === 'survivor') renderSurvivor();
-
     }
+
+    /* ===================== MOBILE DRAWER ===================== */
+    function openDrawer() {
+      const s = document.getElementById('appSidebar');
+      const b = document.getElementById('drawerBackdrop');
+      const t = document.getElementById('mobileMenuToggle');
+      if (!s || !b) return;
+      s.classList.add('open');
+      b.classList.add('open');
+      document.body.classList.add('drawer-open');
+      if (t) t.setAttribute('aria-expanded', 'true');
+    }
+    function closeDrawer() {
+      const s = document.getElementById('appSidebar');
+      const b = document.getElementById('drawerBackdrop');
+      const t = document.getElementById('mobileMenuToggle');
+      if (!s || !b) return;
+      s.classList.remove('open');
+      b.classList.remove('open');
+      document.body.classList.remove('drawer-open');
+      if (t) t.setAttribute('aria-expanded', 'false');
+    }
+    (function () {
+      const toggle = document.getElementById('mobileMenuToggle');
+      const backdrop = document.getElementById('drawerBackdrop');
+      if (toggle) toggle.addEventListener('click', () => {
+        const s = document.getElementById('appSidebar');
+        if (s && s.classList.contains('open')) closeDrawer(); else openDrawer();
+      });
+      if (backdrop) backdrop.addEventListener('click', closeDrawer);
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+      const mRun = document.getElementById('mobileRunBtn');
+      if (mRun) mRun.addEventListener('click', () => {
+        const rb = document.getElementById('runBtn');
+        if (rb) rb.click();
+        const snap = document.getElementById('metrics');
+        if (snap) snap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    })();
 
     navItems.forEach(li => {
       li.addEventListener('click', () => switchView(li.dataset.view));
@@ -954,7 +1127,6 @@
         { name: 'Chosen ages', c1: input.person1.claim, c2: input.person2.claim },
         { name: 'Both at 62', c1: 62, c2: 62 },
         { name: 'Both at FRA', c1: input.person1.fra, c2: input.person2.fra },
-        { name: 'Higher earner at 70', c1: input.person1.pia >= input.person2.pia ? 70 : 62, c2: input.person1.pia >= input.person2.pia ? 62 : 70 },
         { name: 'Delay both to 70', c1: 70, c2: 70 }
       ];
     }
@@ -1449,11 +1621,26 @@
     /* ===================== INIT ===================== */
     document.getElementById('runBtn').addEventListener('click', render);
     document.getElementById('downloadPdfBtn').addEventListener('click', generatePDF);
-    document.getElementById('presetBtn').addEventListener('click', () => {
-      document.getElementById('p1claim').value = '62';
-      document.getElementById('p2claim').value = '64';
-      render();
-    });
+    function clearInputs() {
+      document.getElementById('p1name').value = '';
+      document.getElementById('p2name').value = '';
+      document.getElementById('p1pia').value = '';
+      document.getElementById('p2pia').value = '';
+      const p1fra = document.getElementById('p1fra'); if (p1fra) p1fra.value = '67';
+      const p2fra = document.getElementById('p2fra'); if (p2fra) p2fra.value = '67';
+      const p1claim = document.getElementById('p1claim'); if (p1claim) p1claim.value = '62';
+      const p2claim = document.getElementById('p2claim'); if (p2claim) p2claim.value = '67';
+      const life1 = document.getElementById('life1'); if (life1) life1.value = '88';
+      const life2 = document.getElementById('life2'); if (life2) life2.value = '92';
+      const pdfBtn = document.getElementById('downloadPdfBtn');
+      if (pdfBtn) pdfBtn.style.display = 'none';
+      const metrics = document.getElementById('metrics');
+      const bars = document.getElementById('bars');
+      if (metrics) metrics.innerHTML = '';
+      if (bars) bars.innerHTML = '';
+      document.getElementById('p1name').focus();
+    }
+    document.getElementById('presetBtn').addEventListener('click', clearInputs);
     render();
   </script>
 </body>
